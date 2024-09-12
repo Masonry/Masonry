@@ -105,6 +105,9 @@
     NSMutableString *description = [[NSMutableString alloc] initWithString:@"<"];
 
     [description appendString:[self.class descriptionForObject:self]];
+    if (self.identifier) {
+        [description appendFormat:@" '%@'", self.identifier];
+    }
 
     [description appendFormat:@" %@", [self.class descriptionForObject:self.firstItem]];
     if (self.firstAttribute != NSLayoutAttributeNotAnAttribute) {
