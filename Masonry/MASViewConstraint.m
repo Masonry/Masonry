@@ -327,6 +327,17 @@ static char kInstalledConstraintsKey;
     if (!self.firstViewAttribute.isSizeAttribute && !self.secondViewAttribute) {
         secondLayoutItem = self.firstViewAttribute.view.superview;
         secondLayoutAttribute = firstLayoutAttribute;
+        
+        if (!secondLayoutItem) { // Don't continue to crash.
+            // 发送通知，让外界处理（在 Debug / Release 下生效）
+            NSString *reason = [NSString stringWithFormat:@"NSLayoutConstraint for %@: A multiplier of 0 or a nil second item together with a location for the first attribute creates an illegal constraint of a location equal to a constant. Location attributes must be specified in pairs.", self.firstViewAttribute.view];
+            NSException *exception = [[NSException alloc] initWithName:@"MasonryException" reason:reason userInfo:nil];
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"AutoLayoutExceptionNotification" object:exception];
+            
+            // 断言（在 Debug 下生效）
+            NSAssert(NO, reason);
+            return;
+        }
     }
     
     MASLayoutConstraint *layoutConstraint
